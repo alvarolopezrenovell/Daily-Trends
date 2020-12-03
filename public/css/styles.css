@@ -5,3 +5,15 @@ textarea#feed_body {
 .fz-12 {
     font-size: 12px;
 }
+
+#feed_publishedAt select {
+    margin-right: 10px;
+}
+
+#feed_publishedAt select#feed_publishedAt_time_hour {
+    margin-right: 0px;
+}
+
+footer {
+    height: 200px;
+}
