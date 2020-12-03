@@ -6,45 +6,60 @@ namespace App\Service;
 
 use App\Entity\Feed;
 use App\Factory\FeedFactory;
+use App\Repository\FeedRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\DomCrawler\Crawler;
 
 class FeedReaderService
 {
 
+    private $em;
+
     public const EL_PAIS = 'https://elpais.com/';
     public const EL_MUNDO = 'https://www.elmundo.es/';
 
-    public function getFilters($url) {
-        $filters = [
-            'feed_section' => '',
-            'feed_link' => '',
-        ];
+    public const FEEDS = [
+      self::EL_PAIS,
+      self::EL_MUNDO,
+    ];
 
-        switch ($url) {
-            case self::EL_PAIS:
-                $filters['feed_section'] = 'article';
-                $filters['feed_link'] = 'article h2 > a';
-                break;
-            case self::EL_MUNDO:
-                $filters['feed_section'] = 'article';
-                $filters['feed_link'] = 'article header .ue-c-cover-content__link';
-                break;
+    public const LIMIT_FEEDS = 5;
+
+    public function __construct(EntityManagerInterface $em)
+    {
+        $this->em = $em;
+    }
+
+    public function createFeeds() {
+        /** @var FeedRepository $feedRepo */
+        $feedRepo = $this->em->getRepository(Feed::class);
+
+        foreach (self::FEEDS as $url) {
+            $feeds = $this->getFeedsByUrl($url);
+            foreach ($feeds as $feed) {
+                // Check if exists by url (source)
+                $exists = $feedRepo->findOneBy(['source' => $feed->getSource()]);
+                if ($exists === null) {
+                    $this->em->persist($feed);
+                }
+            }
         }
 
-        return $filters;
+        $this->em->flush();
     }
 
     /**
      * @param $url
      * @return array|Feed[]
      */
-    public function getFeedsByUrl($url) {
+    private function getFeedsByUrl($url) {
         $feeds = [];
 
         $crawler = new Crawler(file_get_contents($url));
 
         $filters = $this->getFilters($url);
 
+        // Search all feeds
         $links = $crawler->filter($filters['feed_section'])->each(function (Crawler $node, $i) use ($url, $filters) {
             $href = $node->filter($filters['feed_link'])->attr('href');
             if (strpos($href, $url) !== 0) {
@@ -52,13 +67,15 @@ class FeedReaderService
             }
             return $href;
         });
-        $links = array_splice($links, 0, 5);
+
+        // Get only self::LIMIT_FEEDS
+        $links = array_splice($links, 0, self::LIMIT_FEEDS);
 
         foreach ($links as $source) {
 
             $crawler = new Crawler(file_get_contents($source));
 
-            $feed = $this->createFeed($crawler, $url, $source);
+            $feed = $this->createFeedByCrawler($crawler, $url, $source);
 
             if ($feed) {
                 $feeds[] = $feed;
@@ -68,7 +85,13 @@ class FeedReaderService
         return $feeds;
     }
 
-    private function createFeed($crawler, $url, $source) {
+    /**
+     * @param $crawler
+     * @param $url
+     * @param $source
+     * @return Feed|null
+     */
+    private function createFeedByCrawler($crawler, $url, $source) {
         $feed = null;
 
         switch ($url) {
@@ -124,12 +147,20 @@ class FeedReaderService
         return $feed;
     }
 
+    /**
+     * @param $body
+     * @return string
+     */
     private function processBody($body) {
         $body = join(PHP_EOL.PHP_EOL, $body);
         $body = strip_tags($body, '<br><p><ul><li><b><i><u><a>');
         return $body;
     }
 
+    /**
+     * @param $dateTime
+     * @return \DateTime|null
+     */
     private function processDateTime($dateTime) {
 
         $esp_months = [
@@ -162,6 +193,30 @@ class FeedReaderService
         }
 
         return $dateTime;
+    }
+
+    /**
+     * @param $url
+     * @return string[]
+     */
+    private function getFilters($url) {
+        $filters = [
+          'feed_section' => '',
+          'feed_link' => '',
+        ];
+
+        switch ($url) {
+            case self::EL_PAIS:
+                $filters['feed_section'] = 'article';
+                $filters['feed_link'] = 'article h2 > a';
+                break;
+            case self::EL_MUNDO:
+                $filters['feed_section'] = 'article';
+                $filters['feed_link'] = 'article header .ue-c-cover-content__link';
+                break;
+        }
+
+        return $filters;
     }
 
 }
