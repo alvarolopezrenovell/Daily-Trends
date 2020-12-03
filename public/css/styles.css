@@ -2,9 +2,6 @@ textarea#feed_body {
     height: 300px;
 }
 
-svg.publisher,
-svg.link {
-    width: 10px;
-    position: relative;
-    top: -2px;
+.fz-12 {
+    font-size: 12px;
 }
