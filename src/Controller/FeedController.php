@@ -54,6 +54,8 @@ class FeedController extends AbstractController
                     $em->flush();
 
                     $this->addFlash('success', 'Feed saved');
+
+                    return $this->redirectToRoute('feed_view', ['id' => $feed->getId()]);
                 } catch (\Exception $e) {
                     $this->addFlash('danger', 'Error on save');
                 }
