@@ -71,4 +71,25 @@ class FeedController extends AbstractController
         ]);
     }
 
+    /**
+     * @Route("/delete/{id}", name="feed_delete")
+     * @param Feed $feed
+     * @return Response
+     */
+    public function delete(Feed $feed)
+    {
+        try {
+            $em = $this->getDoctrine()->getManager();
+            $em->remove($feed);
+            $em->flush();
+
+            $this->addFlash('success', 'Feed removed');
+            return $this->redirectToRoute('home');
+        } catch (\Exception $e) {
+            $this->addFlash('danger', 'Error on delete');
+        }
+
+        return $this->redirectToRoute('feed_view', ['id' => $feed->getId()]);
+    }
+
 }
