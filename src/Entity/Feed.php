@@ -29,31 +29,31 @@ class Feed
 
     /**
      * @var string
-     * @ORM\Column(type="text", nullable=false)
+     * @ORM\Column(type="text")
      */
     protected $body;
 
     /**
      * @var string
-     * @ORM\Column(type="string", length=255, nullable=false)
+     * @ORM\Column(type="string", length=255)
      */
     protected $image;
 
     /**
      * @var string
-     * @ORM\Column(type="text", nullable=false)
+     * @ORM\Column(type="text")
      */
     protected $source;
 
     /**
      * @var string
-     * @ORM\Column(type="string", length=255, nullable=false)
+     * @ORM\Column(type="string", length=255)
      */
     protected $publisher;
 
     /**
      * @var \DateTime
-     * @ORM\Column(type="datetime", nullable=true)
+     * @ORM\Column(type="datetime")
      */
     protected $publishedAt;
 
@@ -97,6 +97,10 @@ class Feed
         return $this->body;
     }
 
+    public function getCleanBody() {
+        return strip_tags($this->getBody());
+    }
+
     /**
      * @param string $body
      */
@@ -114,9 +118,9 @@ class Feed
     }
 
     /**
-     * @param string $image
+     * @param string|null $image
      */
-    public function setImage(string $image): void
+    public function setImage(?string $image): void
     {
         $this->image = $image;
     }

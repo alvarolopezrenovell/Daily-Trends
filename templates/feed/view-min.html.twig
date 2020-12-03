@@ -1,10 +1,10 @@
-<div class="col-xs-12 col-sm-4">
-  <div class="card" style="width: 18rem;">
-    <img src="{{ feed.image }}" class="card-img-top" alt="{{ feed.title }}">
+<div class="col-3">
+  <div class="card mb-5" style="width: 15rem;">
+    <img src="{{ feed.image }}" class="card-img-top" alt="">
     <div class="card-body">
       <h5 class="card-title">{{ feed.title }}</h5>
       <p class="card-text">
-        {{ feed.body[:150] ~ '...' }}
+        {{ feed.getCleanBody()[:150] ~ '...' }}
         <br>
         <br>
 
