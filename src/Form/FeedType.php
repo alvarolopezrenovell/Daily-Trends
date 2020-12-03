@@ -21,7 +21,7 @@ class FeedType extends AbstractType
         $builder
           ->add('title', TextType::class)
           ->add('body', TextareaType::class)
-          ->add('image', TextType::class)
+          ->add('image', TextType::class, ['required' => false])
           ->add('source', TextType::class)
           ->add('publisher', TextType::class)
           ->add('publishedAt', DateTimeType::class)

@@ -23,7 +23,7 @@ class Feed
 
     /**
      * @var string
-     * @ORM\Column(type="string", length=255, nullable=false)
+     * @ORM\Column(type="string", length=255)
      */
     protected $title;
 
@@ -35,7 +35,7 @@ class Feed
 
     /**
      * @var string
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=255, nullable=true)
      */
     protected $image;
 
@@ -117,7 +117,7 @@ class Feed
     /**
      * @return string
      */
-    public function getImage(): string
+    public function getImage():? string
     {
         return $this->image;
     }
