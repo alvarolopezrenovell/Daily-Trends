@@ -30,6 +30,6 @@ services:
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
 
-    app.person_fields_validator:
+    feed_reader_service:
         class: App\Service\FeedReaderService
         arguments: [ "@doctrine.orm.entity_manager" ]
