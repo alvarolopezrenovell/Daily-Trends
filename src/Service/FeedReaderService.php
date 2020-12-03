@@ -75,7 +75,11 @@ class FeedReaderService
 
             $crawler = new Crawler(file_get_contents($source));
 
-            $feed = $this->createFeedByCrawler($crawler, $url, $source);
+            try {
+                $feed = $this->createFeedByCrawler($crawler, $url, $source);
+            } catch (\Exception $e) {
+                $feed = null;
+            }
 
             if ($feed) {
                 $feeds[] = $feed;
@@ -100,7 +104,12 @@ class FeedReaderService
                 $title = $crawler->filter('article h1')->text();
 
                 if (strpos($source, 'verne')) {
-                    $image = $crawler->filter('article figure.foto meta')->attr('content');
+                    try {
+                        $image = $crawler->filter('article figure.foto meta')->attr('content');
+                    } catch (\Exception $e) {
+                        // The article has video but no image
+                        $image = '';
+                    }
                     $body = $crawler->filter('article #cuerpo_noticia p')->each(function (Crawler $node, $i) {
                         return $node->text();
                     });
@@ -129,7 +138,12 @@ class FeedReaderService
             case self::EL_MUNDO:
 
                 $title = $crawler->filter('article h1')->text();
-                $image = $crawler->filter('article figure picture img')->attr('src');
+                try {
+                    $image = $crawler->filter('article figure picture img')->attr('src');
+                } catch (\Exception $e) {
+                    // The article has video but no image
+                    $image = '';
+                }
                 $body = $crawler->filter('article .ue-c-article__body p')->each(function (Crawler $node, $i) {
                     return $node->text();
                 });
