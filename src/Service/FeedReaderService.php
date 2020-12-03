@@ -4,9 +4,164 @@
 namespace App\Service;
 
 
+use App\Entity\Feed;
+use App\Factory\FeedFactory;
+use Symfony\Component\DomCrawler\Crawler;
+
 class FeedReaderService
 {
 
+    public const EL_PAIS = 'https://elpais.com/';
+    public const EL_MUNDO = 'https://www.elmundo.es/';
 
+    public function getFilters($url) {
+        $filters = [
+            'feed_section' => '',
+            'feed_link' => '',
+        ];
+
+        switch ($url) {
+            case self::EL_PAIS:
+                $filters['feed_section'] = 'article';
+                $filters['feed_link'] = 'article h2 > a';
+                break;
+            case self::EL_MUNDO:
+                $filters['feed_section'] = 'article';
+                $filters['feed_link'] = 'article header .ue-c-cover-content__link';
+                break;
+        }
+
+        return $filters;
+    }
+
+    /**
+     * @param $url
+     * @return array|Feed[]
+     */
+    public function getFeedsByUrl($url) {
+        $feeds = [];
+
+        $crawler = new Crawler(file_get_contents($url));
+
+        $filters = $this->getFilters($url);
+
+        $links = $crawler->filter($filters['feed_section'])->each(function (Crawler $node, $i) use ($url, $filters) {
+            $href = $node->filter($filters['feed_link'])->attr('href');
+            if (strpos($href, $url) !== 0) {
+                $href = $url.$href;
+            }
+            return $href;
+        });
+        $links = array_splice($links, 0, 5);
+
+        foreach ($links as $source) {
+
+            $crawler = new Crawler(file_get_contents($source));
+
+            $feed = $this->createFeed($crawler, $url, $source);
+
+            if ($feed) {
+                $feeds[] = $feed;
+            }
+        }
+
+        return $feeds;
+    }
+
+    private function createFeed($crawler, $url, $source) {
+        $feed = null;
+
+        switch ($url) {
+            case self::EL_PAIS:
+
+                $title = $crawler->filter('article h1')->text();
+
+                if (strpos($source, 'verne')) {
+                    $image = $crawler->filter('article figure.foto meta')->attr('content');
+                    $body = $crawler->filter('article #cuerpo_noticia p')->each(function (Crawler $node, $i) {
+                        return $node->text();
+                    });
+                    $publisher = $crawler->filter('article .autor')->text();
+                    $publishedAt = $crawler->filter('article time a')->text();
+                } else {
+                    try {
+                        $image = $crawler->filter('article figure img')->attr('src');
+                    } catch (\Exception $e) {
+                        // The article has video but no image
+                        $image = '';
+                    }
+                    $body = $crawler->filter('article .article_body p')->each(function (Crawler $node, $i) {
+                        return $node->text();
+                    });
+                    $publisher = $crawler->filter('article .a_by > .a_auts > .a_aut > a.a_aut_n')->text();
+                    $publishedAt = $crawler->filter('article .a_by .a_ti')->text();
+                }
+
+                $body = $this->processBody($body);
+                $publishedAt = $this->processDateTime($publishedAt);
+
+                $feed = FeedFactory::create($title, $body, $image, $source, $publisher, $publishedAt);
+
+                break;
+            case self::EL_MUNDO:
+
+                $title = $crawler->filter('article h1')->text();
+                $image = $crawler->filter('article figure picture img')->attr('src');
+                $body = $crawler->filter('article .ue-c-article__body p')->each(function (Crawler $node, $i) {
+                    return $node->text();
+                });
+                $publisher = $crawler->filter('article .ue-c-article__byline-name')->text();
+                $publishedAt = $crawler->filter('article time')->attr('datetime');
+
+                $body = $this->processBody($body);
+                $publishedAt = $this->processDateTime($publishedAt);
+
+                $feed = FeedFactory::create($title, $body, $image, $source, $publisher, $publishedAt);
+
+                break;
+        }
+
+        return $feed;
+    }
+
+    private function processBody($body) {
+        $body = join(PHP_EOL.PHP_EOL, $body);
+        $body = strip_tags($body, '<br><p><ul><li><b><i><u><a>');
+        return $body;
+    }
+
+    private function processDateTime($dateTime) {
+
+        $esp_months = [
+          'ene' => '01',
+          'feb' => '02',
+          'mar' => '03',
+          'may' => '04',
+          'abr' => '05',
+          'jun' => '06',
+          'jul' => '07',
+          'ago' => '08',
+          'sep' => '09',
+          'oct' => '10',
+          'nov' => '11',
+          'dic' => '12',
+          'dec' => '12',
+        ];
+
+        $dateTime = strtolower($dateTime);
+        $dateTime = str_replace(' cet', '', $dateTime);
+        $dateTime = str_replace(' ', '-', $dateTime);
+        $dateTime = str_replace('---', ' ', $dateTime);
+
+        $dateTime = strtr( $dateTime, $esp_months);
+
+        try {
+            $dateTime = new \DateTime($dateTime);
+        } catch (\Exception $e) {
+            $dateTime = null;
+        }
+
+        return $dateTime;
+    }
 
 }
