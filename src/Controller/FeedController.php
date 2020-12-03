@@ -18,6 +18,16 @@ class FeedController extends AbstractController
 {
 
     /**
+     * @Route("/", name="feed_index")
+     * @return Response
+     */
+    public function index()
+    {
+        $feeds = $this->getDoctrine()->getRepository(Feed::class)->findAll();
+        return $this->render('feed/index.html.twig', ['feeds' => $feeds]);
+    }
+
+    /**
      * @Route("/view/{id}", name="feed_view")
      * @param Feed $feed
      * @return Response
