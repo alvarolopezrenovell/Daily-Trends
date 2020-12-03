@@ -1,0 +1,18 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+  <div class="container">
+    <h1>{{ feed.title }}</h1>
+    <img src="{{ feed.image }}" alt="">
+    <br><br>
+    <section class="mb-5">
+      {{ feed.body | nl2br | raw  }}
+    </section>
+
+    <p>
+      <b>Publisher:</b> <span class="text-capitalize">{{ feed.publisher|lower }}</span> <br>
+      <b>Source:</b> <a href="{{ feed.source }}" target="_blank">{{ feed.source }}</a>
+    </p>
+
+  </div>
+{% endblock %}

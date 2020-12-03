@@ -11,21 +11,25 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
+/**
+ * @Route("feed")
+ */
 class FeedController extends AbstractController
 {
 
     /**
-     * @Route("/", name="feed_index")
+     * @Route("/view/{id}", name="feed_view")
+     * @param Feed $feed
      * @return Response
      */
-    public function index()
+    public function view(Feed $feed)
     {
-        return $this->render('feed/index.html.twig');
+        return $this->render('feed/view.html.twig', ['feed' => $feed]);
     }
 
     /**
-     * @Route("feed/create", name="feed_create")
-     * @Route("feed/edit/{id}", name="feed_edit")
+     * @Route("/create", name="feed_create")
+     * @Route("/edit/{id}", name="feed_edit")
      * @param Request $request
      * @param Feed|null $feed
      * @return Response
