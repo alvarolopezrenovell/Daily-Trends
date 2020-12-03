@@ -14,7 +14,7 @@
       <i class="fas fa-user fz-12"></i>
       <span class="text-capitalize">{{ feed.publisher|lower }}</span> <br>
       <i class="fas fa-link fz-12"></i>
-      <a href="{{ feed.source }}">Link to source</a>
+      <a href="{{ feed.source }}" target="_blank">Link to source</a>
     </p>
 
     <a href="{{ path('feed_edit', {id: feed.id}) }}" class="btn-primary btn"><i class="fas fa-edit"></i> Edit</a>
