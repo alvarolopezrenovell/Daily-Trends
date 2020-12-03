@@ -1,13 +1,36 @@
 # Daily-Trends
 
+### Run project
 
-#### Import db
+    # Download symfony
+    wget https://get.symfony.com/cli/installer -O - | bash
 
+    # Export path
+    export PATH="$HOME/.symfony/bin:$PATH"
 
-#### Init server
+    # Start server
+    symfony server:start
+    
+### Create DB
 
-wget https://get.symfony.com/cli/installer -O - | bash
+Set DB configuration in .env
 
-export PATH="$HOME/.symfony/bin:$PATH"
+    DATABASE_URL="mysql://<user>:<pass>@<host>:<port>/daily_trends"
+    
+Create DB
 
-symfony server:start
+    mysql -h<host> -u<user> -p<pass> -e 'CREATE SCHEMA `daily_trends` DEFAULT CHARACTER SET utf8;';
+    
+Update schema
+    
+    php bin/console doctrine:schema:update --force
+
+### Execute scraping
+
+This command should be configured in the cron every X time 
+
+    php bin/console dailytrends:update-feed-reader
+    
+### Execute app
+
+    http://127.0.0.1:8000/
