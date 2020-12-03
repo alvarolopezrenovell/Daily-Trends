@@ -18,7 +18,7 @@ class FeedFactory
      * @param $publishedAt
      * @return Feed
      */
-    public static function create(string $title, string $body, string $image, string $source, string $publisher, \DateTime $publishedAt) {
+    public static function create(string $title, string $body, ?string $image, string $source, string $publisher, ?\DateTime $publishedAt) {
         $feed = new Feed();
 
         $feed->setTitle($title);
