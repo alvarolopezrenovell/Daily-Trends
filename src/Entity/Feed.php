@@ -41,7 +41,7 @@ class Feed
 
     /**
      * @var string
-     * @ORM\Column(type="string", length=255, nullable=false)
+     * @ORM\Column(type="text", nullable=false)
      */
     protected $source;
 
@@ -50,6 +50,12 @@ class Feed
      * @ORM\Column(type="string", length=255, nullable=false)
      */
     protected $publisher;
+
+    /**
+     * @var \DateTime
+     * @ORM\Column(type="datetime", nullable=true)
+     */
+    protected $publishedAt;
 
     /**
      * @return int
@@ -145,6 +151,30 @@ class Feed
     public function setPublisher(string $publisher): void
     {
         $this->publisher = $publisher;
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getPublishedAt():? \DateTime
+    {
+        return $this->publishedAt;
+    }
+
+    /**
+     * @return string
+     */
+    public function getPublishedAtTxt()
+    {
+        return $this->publishedAt instanceof \DateTime ? $this->publishedAt->format('d-m-Y H:i\h') : '';
+    }
+
+    /**
+     * @param \DateTime|null $publishedAt
+     */
+    public function setPublishedAt(?\DateTime $publishedAt): void
+    {
+        $this->publishedAt = $publishedAt;
     }
 
 }

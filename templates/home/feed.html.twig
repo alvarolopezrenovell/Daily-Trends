@@ -11,7 +11,10 @@
         <i class="fas fa-user fz-12"></i>
         <span class="text-capitalize">{{ feed.publisher|lower }}</span> <br>
         <i class="fas fa-link fz-12"></i>
-        <a href="{{ feed.source }}" target="_blank">Link to source</a>
+        <a href="{{ feed.source }}" target="_blank">Link to source</a> <br>
+
+        <i class="far fa-clock fz-12"></i>
+        {{ feed.getPublishedAtTxt() }} <br>
       </p>
       <a href="{{ path('feed_view', {id: feed.id}) }}" class="btn btn-primary"><i class="fas fa-eye"></i> View</a>
     </div>

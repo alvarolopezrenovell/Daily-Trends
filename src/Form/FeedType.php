@@ -6,6 +6,7 @@ namespace App\Form;
 
 use App\Entity\Feed;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -23,6 +24,7 @@ class FeedType extends AbstractType
           ->add('image', TextType::class)
           ->add('source', TextType::class)
           ->add('publisher', TextType::class)
+          ->add('publishedAt', DateTimeType::class)
           ->add('submit', SubmitType::class);
     }
 
