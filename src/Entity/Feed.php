@@ -57,6 +57,11 @@ class Feed
      */
     protected $publishedAt;
 
+    public function __construct()
+    {
+        $this->publishedAt = new \DateTime();
+    }
+
     /**
      * @return int
      */
