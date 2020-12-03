@@ -18,7 +18,7 @@ class HomeController extends AbstractController
      */
     public function index()
     {
-        $feeds = $this->getDoctrine()->getRepository(Feed::class)->findAll();
+        $feeds = $this->getDoctrine()->getRepository(Feed::class)->getFeedsByCurrentDate();
         return $this->render('home/index.html.twig', ['feeds' => $feeds]);
     }
 
