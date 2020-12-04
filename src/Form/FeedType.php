@@ -16,6 +16,10 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 class FeedType extends AbstractType
 {
 
+    /**
+     * @param FormBuilderInterface $builder
+     * @param array $options
+     */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
@@ -28,6 +32,10 @@ class FeedType extends AbstractType
           ->add('submit', SubmitType::class);
     }
 
+    /**
+     * @param OptionsResolver $resolver
+     * @return string[]
+     */
     public function configureOptions(OptionsResolver $resolver)
     {
         return [
