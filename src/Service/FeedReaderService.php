@@ -52,7 +52,7 @@ class FeedReaderService
      * @param $url
      * @return array|Feed[]
      */
-    private function getFeedsByUrl($url) {
+    public function getFeedsByUrl($url) {
         $feeds = [];
 
         $crawler = new Crawler(file_get_contents($url));
@@ -95,7 +95,7 @@ class FeedReaderService
      * @param $source
      * @return Feed|null
      */
-    private function createFeedByCrawler($crawler, $url, $source) {
+    public function createFeedByCrawler($crawler, $url, $source) {
         $feed = null;
 
         switch ($url) {
@@ -165,7 +165,7 @@ class FeedReaderService
      * @param $body
      * @return string
      */
-    private function processBody($body) {
+    public function processBody($body) {
         $body = join(PHP_EOL.PHP_EOL, $body);
         $body = strip_tags($body, '<br><p><ul><li><b><i><u><a>');
         return $body;
@@ -175,7 +175,7 @@ class FeedReaderService
      * @param $dateTime
      * @return \DateTime|null
      */
-    private function processDateTime($dateTime) {
+    public function processDateTime($dateTime) {
 
         $esp_months = [
           'ene' => '01',
@@ -213,7 +213,7 @@ class FeedReaderService
      * @param $url
      * @return string[]
      */
-    private function getFilters($url) {
+    public function getFilters($url) {
         $filters = [
           'feed_section' => '',
           'feed_link' => '',
